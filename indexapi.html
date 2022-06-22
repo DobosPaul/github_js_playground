@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div id="repositorie">
+        <div>My Github Repositories</div>
+        <ol id="reposList"></ol>
+
+    </div>
+    <div id="issues">
+        <div>Issues From Repo: <span id="selectedRepo"></span></div>
+        <ul id="issuesList"></ul>
+
+    </div>
+
+</body>
+   <script>
+     headerParams ={ "Authorization": "Bearer" }
+
+       function handleResponse(repos) {
+
+           console.log("RESP FROM GITHUB: " + JSON.stringify(repos));
+           for( i=0; i< repos.length ; i++)
+           {
+               console.log("full_name: "+ repos[i].full_name);
+               $("#reposList").append("<li class='repoName'>" + repos[i].full_name + "</li>");
+
+               var a = getIssues(repos[i].issues_url.replace('{/number}', ''));
+              // $("#reposList").append("<li class='repoName'>" + repos[i].full_name + "</li>");
+           }
+           $("#repoName").click();
+       }
+
+       function getIssues(issuesUrl){
+            $.ajax({
+            type: "GET",
+            url: issuesUrl,
+            beforeSend: function (issues) {
+                issues.setRequestHeader('Authorization', 'Bearer');
+            },
+            success: function(res){ return res;},
+            error: function () {
+                console.error("Something went wrong while calling issues from Github");
+            }
+        })
+       }
+
+       function handleIssuesResponse(issues) {
+
+           console.log("ISSUES FROM GITHUB: " + JSON.stringify(issues));
+          for( i=0; i< issues.length ; i++)
+           {
+               console.log("full_name: "+ repos[i].full_name);
+               $("#issuesList").append("<li class='issueName'>" + issues[i] + "</li>");
+           }
+           $("#repoName").click();
+
+
+
+       }
+
+      $.ajax({
+           type: "GET",
+           url: "https://api.github.com/user/repos",
+           beforeSend: function (xhr) {
+               xhr.setRequestHeader('Authorization', 'Bearer');
+           },
+           success: handleResponse,
+           error: function () {
+               console.error("Something went wrong while calling /user/repos from Github");
+           },
+       })
+    /*$.ajax({
+        type: "GET",
+        url: "https://api.github.com/issues ",
+        beforeSend: function (issues) {
+            issues.setRequestHeader('Authorization', 'Bearer');
+        },
+        success: handleIssuesResponse,
+        error: function () {
+            console.error("Something went wrong while calling issues from Github");
+        },
+    })*/
+
+
+   </script>
+</html>
